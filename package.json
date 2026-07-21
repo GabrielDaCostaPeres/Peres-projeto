@@ -1,0 +1,9 @@
+{
+  "name": "peres-produtos",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Vitrine de afiliados Peres Produtos com dados reais do Mercado Livre",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

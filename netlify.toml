@@ -1,0 +1,11 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# refresh-products roda sozinha a cada hora para manter preço/imagem em dia.
+# (o agendamento também está declarado dentro do próprio arquivo da função,
+# via `module.exports.config = { schedule: "@hourly" }`, o que já é
+# suficiente na maioria dos casos — esta seção é redundante de propósito,
+# como fallback, caso a Netlify exija a declaração aqui também.)
+[functions."refresh-products"]
+  schedule = "@hourly"

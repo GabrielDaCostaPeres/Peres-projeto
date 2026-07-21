@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Peres Produtos 🛍️ · Ofertas selecionadas</title>
+<meta name="description" content="Peres Produtos — vitrine de afiliados com as melhores ofertas do Mercado Livre.">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { display: ['Sora', 'sans-serif'], body: ['Inter', 'sans-serif'] },
+        colors: {
+          ink: '#0F172A',
+          brand: { DEFAULT: '#0F172A', light: '#1E293B' },
+          fire: '#F97316',
+        },
+        keyframes: {
+          fadeInUp: { '0%': { opacity: 0, transform: 'translateY(10px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+          toastDrop: { '0%': { transform: 'translate(-50%, -16px)', opacity: 0 }, '100%': { transform: 'translate(-50%, 0)', opacity: 1 } },
+          toastLift: { '0%': { transform: 'translate(-50%, 0)', opacity: 1 }, '100%': { transform: 'translate(-50%, -16px)', opacity: 0 } },
+          pulse2: { '0%,100%': { opacity: 1 }, '50%': { opacity: .4 } },
+        },
+        animation: {
+          fadeInUp: 'fadeInUp .45s cubic-bezier(.2,.8,.2,1) both',
+          toastDrop: 'toastDrop .3s cubic-bezier(.2,.8,.2,1) forwards',
+          toastLift: 'toastLift .22s ease-in forwards',
+          pulse2: 'pulse2 1.4s ease-in-out infinite',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  h1, h2, h3, .font-display { font-family: 'Sora', sans-serif; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  :focus-visible { outline: 2.5px solid #F97316; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+
+<body class="bg-slate-50 text-ink antialiased font-body min-h-screen pb-14">
+
+  <header class="sticky top-0 z-40 bg-white/60 backdrop-blur-xl backdrop-saturate-150 border-b border-white/40 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <h1 class="font-display font-extrabold text-[19px] sm:text-xl tracking-tight text-ink">
+          Peres Produtos <span class="align-middle">🛍️</span>
+        </h1>
+        <div id="liveBadge" class="hidden sm:flex items-center gap-1.5 text-[12.5px] font-semibold text-emerald-700 bg-emerald-50/80 px-3 py-1.5 rounded-full border border-emerald-200/60">
+          <i data-lucide="shield-check" style="width:14px;height:14px"></i>
+          <span id="liveBadgeText">Dados verificados no Mercado Livre</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="max-w-6xl mx-auto px-4 sm:px-6 pb-3.5">
+      <div id="filterBar" class="flex items-center gap-2 overflow-x-auto no-scrollbar"></div>
+    </nav>
+  </header>
+
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-2">
+    <h2 class="font-display font-bold text-[22px] sm:text-[26px] text-ink tracking-tight leading-tight">
+      Achados imperdíveis, <br class="sm:hidden"><span class="text-fire">selecionados hoje</span>.
+    </h2>
+    <p class="text-[13.5px] text-slate-500 mt-1.5 max-w-md">
+      Preço e imagem vindos direto do Mercado Livre. Copie o código de busca ou toque em <span class="font-semibold text-ink">Comprar</span> para ver a oferta completa.
+    </p>
+  </section>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-4">
+    <div id="loadingState" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+      <!-- skeletons injetados via JS -->
+    </div>
+
+    <div id="productGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"></div>
+
+    <div id="emptyState" class="hidden flex-col items-center justify-center text-center py-20">
+      <div class="w-14 h-14 rounded-2xl bg-white shadow-md flex items-center justify-center mb-3">
+        <i data-lucide="package-search" class="text-slate-300" style="width:24px;height:24px"></i>
+      </div>
+      <p class="text-[14px] font-semibold text-slate-500">Nenhum produto nessa categoria ainda</p>
+      <p class="text-[13px] text-slate-400 mt-1">Toque em "Todos" para ver a vitrine completa</p>
+    </div>
+
+    <div id="errorState" class="hidden flex-col items-center justify-center text-center py-20">
+      <div class="w-14 h-14 rounded-2xl bg-white shadow-md flex items-center justify-center mb-3">
+        <i data-lucide="wifi-off" class="text-red-300" style="width:24px;height:24px"></i>
+      </div>
+      <p class="text-[14px] font-semibold text-slate-500">Não consegui carregar os produtos agora</p>
+      <p class="text-[13px] text-slate-400 mt-1">Tente recarregar a página em instantes</p>
+    </div>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-4 sm:px-6 mt-14 pt-6 pb-4 border-t border-slate-200/70">
+    <p class="text-center text-[11.5px] text-slate-400 leading-relaxed">
+      Peres Produtos participa do Programa de Afiliados do Mercado Livre. Como afiliado, podemos receber uma comissão por compras qualificadas feitas através dos links desta página.
+      Preços e disponibilidade são consultados diretamente na API oficial do Mercado Livre e podem mudar a qualquer momento.
+    </p>
+  </footer>
+
+  <div id="toast" class="fixed left-1/2 top-5 z-50 -translate-x-1/2 opacity-0 pointer-events-none">
+    <div class="flex items-center gap-2.5 bg-ink text-white text-[13.5px] font-semibold pl-3 pr-4 py-3 rounded-2xl shadow-2xl shadow-black/20">
+      <div class="w-6 h-6 rounded-full bg-emerald-400 flex items-center justify-center shrink-0">
+        <i data-lucide="check" class="text-ink" style="width:14px;height:14px"></i>
+      </div>
+      <span id="toastText">Código copiado!</span>
+    </div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  const CATEGORIES = [
+    { key:"todos", label:"Todos", icon:"layout-grid" },
+    { key:"diversos", label:"Diversos", icon:"shapes" },
+    { key:"mochilas", label:"Mochilas Masculinas", icon:"backpack" },
+    { key:"bolsas", label:"Bolsas Femininas", icon:"shopping-bag" },
+  ];
+
+  const BADGES = ["🔥 Oferta", "⚡ Relâmpago", "⭐ Mais vendido"];
+
+  let activeFilter = "todos";
+  let ALL_PRODUCTS = [];
+  let toastTimer = null;
+
+  const filterBar = document.getElementById("filterBar");
+  const grid = document.getElementById("productGrid");
+  const loadingState = document.getElementById("loadingState");
+  const emptyState = document.getElementById("emptyState");
+  const errorState = document.getElementById("errorState");
+  const liveBadge = document.getElementById("liveBadge");
+  const liveBadgeText = document.getElementById("liveBadgeText");
+
+  /* ---------------- SKELETONS (estado de carregamento) ---------------- */
+  function renderSkeletons(){
+    loadingState.innerHTML = Array.from({length: 8}).map(() => `
+      <div class="bg-white rounded-3xl shadow-lg shadow-slate-900/5 overflow-hidden">
+        <div class="aspect-square bg-slate-100 animate-pulse2"></div>
+        <div class="p-4 space-y-3">
+          <div class="h-3.5 bg-slate-100 rounded animate-pulse2 w-4/5"></div>
+          <div class="h-3.5 bg-slate-100 rounded animate-pulse2 w-3/5"></div>
+          <div class="h-10 bg-slate-100 rounded-xl animate-pulse2"></div>
+          <div class="h-12 bg-slate-100 rounded-2xl animate-pulse2"></div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  /* ---------------- BUSCA OS PRODUTOS REAIS ---------------- */
+  async function loadProducts(){
+    renderSkeletons();
+    try {
+      const res = await fetch("/.netlify/functions/get-products");
+      if (!res.ok) throw new Error("Falha ao buscar produtos");
+      const data = await res.json();
+      ALL_PRODUCTS = data.products || [];
+
+      const liveCount = ALL_PRODUCTS.filter(p => p.live).length;
+      if (liveCount === 0) {
+        liveBadge.classList.remove("hidden");
+        liveBadge.classList.remove("text-emerald-700", "bg-emerald-50/80", "border-emerald-200/60");
+        liveBadge.classList.add("text-amber-700", "bg-amber-50/80", "border-amber-200/60");
+        liveBadgeText.textContent = "Aguardando primeira sincronização";
+      } else {
+        liveBadge.classList.remove("hidden");
+        liveBadgeText.textContent = `${liveCount} produtos verificados agora`;
+      }
+
+      loadingState.classList.add("hidden");
+      grid.classList.remove("hidden");
+      renderFilters();
+      renderProducts();
+      lucide.createIcons();
+    } catch (err) {
+      loadingState.classList.add("hidden");
+      errorState.classList.remove("hidden");
+      errorState.classList.add("flex");
+      lucide.createIcons();
+    }
+  }
+
+  /* ---------------- RENDER: FILTROS ---------------- */
+  function renderFilters(){
+    filterBar.innerHTML = CATEGORIES.map(c => `
+      <button type="button" data-cat="${c.key}"
+        class="filter-btn shrink-0 inline-flex items-center gap-1.5 whitespace-nowrap text-[13px] font-semibold px-4 py-2 rounded-full transition-all duration-200
+          ${activeFilter === c.key ? 'bg-brand text-white shadow-md shadow-brand/20' : 'bg-slate-100 text-slate-500 hover:bg-slate-200/80 hover:text-slate-700'}">
+        <i data-lucide="${c.icon}" style="width:14px;height:14px" class="${activeFilter === c.key ? 'text-fire' : 'text-slate-400'}"></i>
+        ${c.label}
+      </button>
+    `).join("");
+
+    filterBar.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (btn.dataset.cat === activeFilter) return;
+        activeFilter = btn.dataset.cat;
+        renderFilters();
+        renderProducts();
+        lucide.createIcons();
+      });
+    });
+  }
+
+  function categoryLabel(cat){
+    if (cat === "mochilas") return "Mochila";
+    if (cat === "bolsas") return "Bolsa";
+    return "Diversos";
+  }
+
+  function formatPrice(price, currency){
+    if (typeof price !== "number") return null;
+    const symbol = currency === "BRL" ? "R$" : (currency || "");
+    return `${symbol} ${price.toFixed(2).replace(".", ",")}`;
+  }
+
+  /* ---------------- RENDER: PRODUTOS ---------------- */
+  function renderProducts(){
+    const list = activeFilter === "todos" ? ALL_PRODUCTS : ALL_PRODUCTS.filter(p => p.cat === activeFilter);
+
+    if (list.length === 0){
+      grid.innerHTML = "";
+      emptyState.classList.remove("hidden");
+      emptyState.classList.add("flex");
+      return;
+    }
+    emptyState.classList.add("hidden");
+    emptyState.classList.remove("flex");
+
+    grid.innerHTML = list.map((p, i) => {
+      const priceStr = formatPrice(p.price, p.currency);
+
+      // Sem dado real ainda: mostramos um estado honesto, não uma imagem falsa
+      if (!p.live) {
+        return `
+          <article class="animate-fadeInUp bg-white rounded-3xl shadow-lg shadow-slate-900/5 overflow-hidden flex flex-col" style="animation-delay:${Math.min(i,10) * 35}ms">
+            <div class="relative aspect-square bg-slate-50 flex flex-col items-center justify-center gap-2 text-center px-6">
+              <i data-lucide="image-off" class="text-slate-300" style="width:26px;height:26px"></i>
+              <p class="text-[11px] text-slate-400 font-medium">Aguardando sincronização com o Mercado Livre</p>
+            </div>
+            <div class="flex flex-col flex-1 p-4 gap-3">
+              <div class="flex items-center justify-between gap-2 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5">
+                <div class="min-w-0">
+                  <p class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">Código</p>
+                  <p class="font-mono text-[13px] font-bold text-ink tracking-tight truncate">${p.promoCode}</p>
+                </div>
+                <button type="button" data-copy="${p.promoCode}" aria-label="Copiar código ${p.promoCode}"
+                  class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-brand hover:border-brand/30 active:scale-95 transition-all">
+                  <i data-lucide="copy" style="width:15px;height:15px"></i>
+                </button>
+              </div>
+              <a href="${p.link}" target="_blank" rel="noopener sponsored"
+                class="mt-auto inline-flex items-center justify-center gap-1.5 bg-fire text-white text-[14px] font-bold py-3.5 rounded-2xl shadow-lg shadow-fire/30 hover:bg-orange-600 active:scale-[0.98] transition-all">
+                🛒 Comprar no Mercado Livre
+              </a>
+            </div>
+          </article>
+        `;
+      }
+
+      return `
+        <article class="animate-fadeInUp group bg-white rounded-3xl shadow-lg shadow-slate-900/5 hover:shadow-xl hover:shadow-slate-900/10 hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col" style="animation-delay:${Math.min(i,10) * 35}ms">
+          <div class="relative aspect-square overflow-hidden bg-slate-100">
+            <img src="${p.image}" alt="${p.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 bg-white/95 backdrop-blur text-[11px] font-bold text-fire px-2.5 py-1 rounded-full shadow-sm">${BADGES[i % BADGES.length]}</span>
+            <span class="absolute top-3 right-3 bg-ink/80 backdrop-blur text-[10px] font-bold text-white px-2.5 py-1 rounded-full uppercase tracking-wide">${categoryLabel(p.cat)}</span>
+            ${!p.available ? '<span class="absolute bottom-3 left-3 bg-red-500/90 backdrop-blur text-[10px] font-bold text-white px-2.5 py-1 rounded-full">Esgotado</span>' : ''}
+          </div>
+
+          <div class="flex flex-col flex-1 p-4 gap-3">
+            <h3 class="font-display font-semibold text-[14.5px] leading-snug text-ink line-clamp-2 min-h-[38px]">${p.title}</h3>
+
+            ${priceStr ? `<p class="font-display font-extrabold text-[19px] text-ink -mt-1">${priceStr}</p>` : ''}
+
+            <div class="flex items-center justify-between gap-2 bg-slate-50 border border-slate-100 rounded-xl px-3 py-2.5">
+              <div class="min-w-0">
+                <p class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">Código</p>
+                <p class="font-mono text-[13px] font-bold text-ink tracking-tight truncate">${p.promoCode}</p>
+              </div>
+              <button type="button" data-copy="${p.promoCode}" aria-label="Copiar código ${p.promoCode}"
+                class="copy-btn shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-brand hover:border-brand/30 active:scale-95 transition-all">
+                <i data-lucide="copy" style="width:15px;height:15px"></i>
+              </button>
+            </div>
+
+            <a href="${p.link}" target="_blank" rel="noopener sponsored"
+              class="mt-auto inline-flex items-center justify-center gap-1.5 bg-fire text-white text-[14px] font-bold py-3.5 rounded-2xl shadow-lg shadow-fire/30 hover:bg-orange-600 active:scale-[0.98] transition-all">
+              🛒 Comprar no Mercado Livre
+            </a>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    lucide.createIcons();
+    grid.querySelectorAll(".copy-btn").forEach(btn => {
+      btn.addEventListener("click", () => handleCopy(btn.dataset.copy));
+    });
+  }
+
+  /* ---------------- COPIAR + TOAST ---------------- */
+  const toast = document.getElementById("toast");
+  const toastText = document.getElementById("toastText");
+
+  function showToast(message){
+    toastText.textContent = message;
+    clearTimeout(toastTimer);
+    toast.classList.remove("animate-toastLift");
+    toast.classList.remove("opacity-0");
+    toast.classList.add("pointer-events-auto");
+    toast.classList.add("animate-toastDrop");
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("animate-toastDrop");
+      toast.classList.add("animate-toastLift");
+      setTimeout(() => {
+        toast.classList.add("opacity-0");
+        toast.classList.remove("pointer-events-auto");
+      }, 220);
+    }, 2200);
+  }
+
+  async function handleCopy(code){
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(code);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = code; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        document.execCommand("copy"); document.body.removeChild(ta);
+      }
+      showToast(`Código ${code} copiado!`);
+    } catch (err) {
+      showToast("Não foi possível copiar. Tente novamente.");
+    }
+  }
+
+  loadProducts();
+})();
+</script>
+
+</body>
+</html>
